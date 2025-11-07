@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+sqlalchemy>=1.4
+alembic
+pydantic
+passlib[bcrypt]
+python-jose[cryptography]
+pytest
+httpx
+databases
