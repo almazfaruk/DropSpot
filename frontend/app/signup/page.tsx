@@ -26,7 +26,7 @@ export default function SignupPage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
       <form onSubmit={handleSignup} className="bg-white shadow-md rounded px-8 pt-6 pb-8 w-80">
-        <h2 className="text-2xl font-bold mb-4 text-center">Kayıt Ol</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Hesap Oluştur</h2>
         <input
           type="email"
           placeholder="E-posta"
