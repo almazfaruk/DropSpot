@@ -1,0 +1,19 @@
+# IDE ve Editör Dosyaları
+.vscode/
+.idea/
+*.swp
+
+# Python Dosyaları (Backend)
+__pycache__/
+*.pyc
+venv/
+.env
+.pytest_cache/
+*.db  # Dropspot.db gibi veritabanı dosyaları için
+
+# Node.js/JavaScript Dosyaları (Frontend)
+node_modules/
+.next/
+dist/
+build/
+npm-debug.log
