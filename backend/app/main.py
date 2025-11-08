@@ -4,8 +4,16 @@ from sqlalchemy.orm import Session
 from . import database, models, schemas, crud, auth
 from datetime import datetime, timezone
 from pydantic import BaseModel
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="DropSpot")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def startup():
@@ -27,10 +35,9 @@ def signup(data: schemas.UserCreate, db: Session = Depends(auth.get_db)):
 
 @app.post("/auth/token", response_model=TokenResponse)
 def login(form_data: dict, db: Session = Depends(auth.get_db)):
-    # minimal: accept JSON { "username": "...", "password": "..." }
-    username = form_data.get("username")
+    email = form_data.get("email")
     password = form_data.get("password")
-    user = crud.get_user_by_email(db, username)
+    user = crud.get_user_by_email(db, email)
     if not user or not auth.verify_password(password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = auth.create_access_token({"sub": user.id})
