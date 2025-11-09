@@ -60,7 +60,7 @@ Uygulama mimarisi üç katmandan oluşur:
 * `POST /auth/signup` — Yeni kullanıcı kaydı
 * `POST /auth/token` — Email + password ile JWT access token üretir
 
-#### User / Public
+#### User
 
 * `GET /drops` — Aktif drop listesini döner
 * `POST /drops/{drop_id}/join` — Kullanıcıyı drop waitlist’ine ekler
