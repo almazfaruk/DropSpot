@@ -19,6 +19,9 @@ def list_active_drops(db: Session):
     now = datetime.now(timezone.utc)
     return db.query(models.Drop).filter(models.Drop.claim_window_end > now).all()
 
+def list_all_drops(db: Session):
+    return db.query(models.Drop).all()
+
 def join_waitlist(db: Session, user_id: str, drop_id: str, priority_score: int):
     existing = db.query(models.Waitlist).filter(and_(models.Waitlist.user_id==user_id, models.Waitlist.drop_id==drop_id)).first()
     if existing:
@@ -105,3 +108,8 @@ def claim_drop(db: Session, user_id: str, drop_id: str):
 
     db.refresh(claim)
     return claim, True
+
+def create_drop(db: Session, drop_in):
+    drop = models.Drop(**drop_in)
+    db.add(drop); db.commit(); db.refresh(drop)
+    return drop
