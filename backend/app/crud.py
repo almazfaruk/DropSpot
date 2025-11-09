@@ -63,10 +63,10 @@ def claim_drop(db: Session, user_id: str, drop_id: str):
         raise ValueError(" waitlist'te değilsiniz!")
 
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now()
     if drop.claim_window_start and drop.claim_window_end:
-        drop.claim_window_start = drop.claim_window_start.replace(tzinfo=timezone.utc)
-        drop.claim_window_end = drop.claim_window_end.replace(tzinfo=timezone.utc)
+        #drop.claim_window_start = drop.claim_window_start.replace(tzinfo=timezone.utc)
+        #drop.claim_window_end = drop.claim_window_end.replace(tzinfo=timezone.utc)
         if not (drop.claim_window_start <= now <= drop.claim_window_end):
             raise HTTPException(status_code=400, detail="Henüz Claim açık değil veya Claim süresi dolmuş.")
 
