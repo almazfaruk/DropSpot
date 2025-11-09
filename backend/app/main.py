@@ -5,6 +5,8 @@ from . import database, models, schemas, crud, auth
 from datetime import datetime, timezone
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime, timezone
+import uuid
 app = FastAPI(title="DropSpot")
 
 app.add_middleware(
@@ -43,4 +45,50 @@ def login(form_data: dict, db: Session = Depends(auth.get_db)):
     token = auth.create_access_token({"sub": user.id})
     return {"access_token": token}
 
+@app.get("/drops", response_model=list[schemas.DropOut])
+def get_drops(db: Session = Depends(auth.get_db)):
+    drops = crud.list_active_drops(db)
+    return drops
 
+@app.post("/drops/{drop_id}/join")
+def join(drop_id: str, user=Depends(auth.get_current_user), db: Session = Depends(auth.get_db)):
+    seed = "7a53e0321fe0"
+    A = 5 + (int(seed[0:2], 16) % 4)
+    B = 10 + (int(seed[3:5], 16) % 6)
+    C = 2 + (int(seed[6:8], 16) % 3)
+
+    signup_latency_ms = (int(uuid.UUID(user.id)) * 101) % 1000
+    account_age_days = (datetime.utcnow() - user.created_at).days if user.created_at else 0
+    rapid_actions = db.query(models.Waitlist).filter_by(user_id=user.id).count()
+
+    base = 20 + (int(seed[-2:], 16) % 10)  # 20–30 arası değer gelicek
+    priority_score = base + ((account_age_days // A) + (signup_latency_ms % B)) + (rapid_actions * C)
+    priority_score = max(priority_score, 0)
+
+    wl, created = crud.join_waitlist(db, user.id, drop_id, priority_score)
+    if not created:
+        return {"status": "Bu Drop'a Daha önce katıldınız", "priority_score": wl.priority_score}
+
+    return {"status": "Drop'a kayıt başarılı", "waitlist_id": wl.id, "priority_score": priority_score}
+
+@app.post("/drops/{drop_id}/leave")
+def leave(drop_id: str, user=Depends(auth.get_current_user), db: Session = Depends(auth.get_db)):
+    deleted = crud.leave_waitlist(db, user.id, drop_id)
+    if deleted:
+        return {"status": "Droptan ayrıldınız"}
+    return {"status": "Bu Drop'da kayıtlı değilsiniz"}
+
+@app.post("/drops/{drop_id}/claim")
+def claim(drop_id: str, user=Depends(auth.get_current_user), db: Session = Depends(auth.get_db)):
+    try:
+        claim_obj, created = crud.claim_drop(db, user.id, drop_id)
+        return {
+            "claim_code": claim_obj.claim_code,
+            "created": created,
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
