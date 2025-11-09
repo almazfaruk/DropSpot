@@ -164,7 +164,7 @@ npm run dev
 
 * **FastAPI** tercih edilmesinin nedeni: yüksek performans, type-hint uyumu ve otomatik OpenAPI dokümantasyonu.
 * **SQLAlchemy ORM** kullanımı: veri modelinde esneklik ve transaction kontrolü.
-* **React + Tailwind**: modern UI, hızlı prototipleme, yeniden kullanılabilir bileşen mimarisi.
+* **Next.js + Tailwind**: modern UI, hızlı prototipleme, yeniden kullanılabilir bileşen mimarisi.
 * **Kişisel Katkılar:** API mimarisinin tasarlanması, tüm CRUD işlemlerinin implementasyonu, admin arayüzünün geliştirilmesi ve idempotent claim mekanizmasının yazılması.
 
 ---
