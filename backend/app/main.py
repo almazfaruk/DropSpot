@@ -92,3 +92,31 @@ def claim(drop_id: str, user=Depends(auth.get_current_user), db: Session = Depen
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/admin/droplist", response_model=list[schemas.DropOut])
+def get_drops(admin=Depends(auth.require_admin),db: Session = Depends(auth.get_db)):
+    drops = crud.list_all_drops(db)
+    return drops
+
+@app.post("/admin/drops", response_model=schemas.DropOut)
+def admin_create_drop(drop_in: schemas.DropCreate, admin=Depends(auth.require_admin), db: Session = Depends(auth.get_db)):
+    drop = crud.create_drop(db, drop_in.dict())
+    return drop
+
+@app.put("/admin/drops/{drop_id}", response_model=schemas.DropOut)
+def admin_update_drop(drop_id: str, drop_in: schemas.DropCreate, admin=Depends(auth.require_admin), db: Session = Depends(auth.get_db)):
+    drop = db.query(models.Drop).filter(models.Drop.id == drop_id).first()
+    if not drop:
+        raise HTTPException(status_code=404, detail="Drop not found")
+    for k,v in drop_in.dict().items():
+        setattr(drop, k, v)
+    db.add(drop); db.commit(); db.refresh(drop)
+    return drop
+
+@app.delete("/admin/drops/{drop_id}")
+def admin_delete_drop(drop_id: str, admin=Depends(auth.require_admin), db: Session = Depends(auth.get_db)):
+    deleted = db.query(models.Drop).filter(models.Drop.id == drop_id).delete()
+    db.commit()
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Drop not found")
+    return {"status": "deleted"}
