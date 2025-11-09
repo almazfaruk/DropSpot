@@ -20,6 +20,7 @@ class DropCreate(BaseModel):
     description: Optional[str] = None
     claim_window_start: Optional[datetime] = None
     claim_window_end: Optional[datetime] = None
+    remaining_slots: int
 
 class DropOut(BaseModel):
     id: str
@@ -27,6 +28,7 @@ class DropOut(BaseModel):
     description: Optional[str]
     claim_window_start: Optional[datetime]
     claim_window_end: Optional[datetime]
+    remaining_slots: int
 
     class Config:
         orm_mode = True

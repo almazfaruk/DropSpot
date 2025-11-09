@@ -24,6 +24,7 @@ class Drop(Base):
     claim_window_end = Column(DateTime, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    remaining_slots = Column(Integer, default=0)
 
 class Waitlist(Base):
     __tablename__ = "waitlists"
